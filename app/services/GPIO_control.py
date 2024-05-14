@@ -5,10 +5,6 @@ from app.services.GPIO_pins import relay_pins, digital_input_pins
 from app.services.GPIO_state import *
 from app.services.Set_GPIO import SetUp_GPIO
 
-def SetUp_GPIO():
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setwarnings(False)
-
 
 ### configure relay
 # turn on relay
