@@ -29,24 +29,4 @@ def turn_relay_off(relay_id):
     GPIO.output(pin_number, GPIO.LOW)
 
 
-# ### configure digital-input
-# # turn on dgip
-# def turn_digital_input_on(dgip_id):
-#     SetUp_GPIO()
-#     # Set the GPIO pin number you want to use
-#     pin_number = get_relay_pin(dgip_id)
-#     # Set up the pin as an output
-#     GPIO.setup(pin_number, GPIO.OUT)
-#     sleep(0.2)
-#     GPIO.output(pin_number, GPIO.HIGH)
 
-
-# # turn off dgip
-# def turn_digital_input_off(dgip_id):
-#     SetUp_GPIO()
-#     # Set the GPIO pin number you want to use
-#     pin_number = get_relay_pin(dgip_id, digital_input_pins)
-#     # Set up the pin as an output
-#     GPIO.setup(pin_number, GPIO.OUT)
-#     sleep(0.2)
-#     GPIO.output(pin_number, GPIO.LOW)
