@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Dict
 from app.services.GPIO_state import relay_pin_status
 from app.services.GPIO_control import turn_relay_on, turn_relay_off
 
@@ -30,6 +31,8 @@ class RelayRequest(BaseModel):
     id: str = "relay1"
     state: str = "off"
         
+class AllRelaysResponse(BaseModel):
+    relays: Dict[str, Relay]
  
 
 

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 
-from app.models.relay import Relay, relays, RelayRequest
+from app.models.relay import Relay, relays, RelayRequest, AllRelaysResponse
 from app.constants.http_responces import *
 from app.services.GPIO_control import turn_relay_on,turn_relay_off
 
@@ -8,7 +8,7 @@ relay_route = APIRouter(tags=["Relay"])
 
 
 @relay_route.get(
-    "/relay",
+    "/relays[relay_id}",
     responses={
         200: {"model": ExampleResponseOK, "description": "Successful response"},
         404: {"model": ExampleResponseNotFound, "description": "Not Found"},
@@ -29,7 +29,7 @@ async def get_relay(relay_id: str):
 
 
 @relay_route.post(
-    "/relay/{relay_id}",
+    "/relays",
     response_description="Successful Response",
     response_model=Relay,
     responses={
@@ -71,7 +71,7 @@ async def change_relay_state(relay_stats: RelayRequest):
 @relay_route.get(
     "/relays",
     responses={
-        200: {"model": ExampleResponseOK, "description": "Successful response"},
+        200: {"model": AllRelaysResponse, "description": "Successful response"},
         500: {
             "model": ExampleResponseServerError,
             "description": "Internal Server Error",

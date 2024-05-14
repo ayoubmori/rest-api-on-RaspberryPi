@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 
 class ExampleResponseOK(BaseModel):
-    id: str = "rela1"
+    id: str 
     state: str = "OFF"
 
 
