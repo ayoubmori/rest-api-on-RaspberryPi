@@ -31,9 +31,6 @@ class RelayRequest(BaseModel):
     id: str = "relay1"
     state: str = "off"
         
-class AllRelaysResponse(BaseModel):
-    relays: Dict[str, Relay]
- 
 
 
 relays = {
@@ -41,3 +38,6 @@ relays = {
     'relay2': Relay(id="relay2"),
     'relay3': Relay(id="relay3")
 }
+
+class AllRelaysResponse(BaseModel):
+    relays: Dict[str, Relay]
