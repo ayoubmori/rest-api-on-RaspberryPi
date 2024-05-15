@@ -14,11 +14,8 @@ def get_relay_pin(relay_id):
 
 # get pin status
 def relay_pin_status(relay_id):
-    global relay_pins
-    SetUp_GPIO()
     pin_number = get_relay_pin(relay_id)
    #GPIO.setmode(GPIO.BOARD)  # Set pin numbering mode to board
-    GPIO.setup(pin_number, GPIO.OUT)  # Set the pin_number as input
     state = GPIO.input(pin_number)
     return "ON" if state else "OFF"
 
@@ -32,10 +29,7 @@ def get_digital_input_pin(dgip_id):
 
 # get pin status
 def dgip_pin_status(dgip_id):
-    global digital_input_pins
-    SetUp_GPIO()
     pin_number = get_digital_input_pin(dgip_id)
     #GPIO.setmode(GPIO.BOARD)  # Set pin numbering mode to board
-    GPIO.setup(pin_number, GPIO.OUT)  # Set the pin_number as input
     state = GPIO.input(pin_number)
     return "ON" if state else "OFF"

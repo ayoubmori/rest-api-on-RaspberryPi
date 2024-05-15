@@ -1,8 +1,9 @@
-from fastapi import APIRouter, HTTPException
-
-from app.models.relay import Relay, relays, RelayRequest, AllRelaysResponse
+from fastapi import APIRouter, HTTPException,Body
+from typing import List, Dict
+import json
+from app.models.relay import Relay, relays, AllRelaysResponse, ConfigureRelayResponse
 from app.constants.http_responces import *
-from app.services.GPIO_control import turn_relay_on,turn_relay_off
+from app.services.GPIO_control import configure_relay
 
 relay_route = APIRouter(tags=["Relay"])
 
@@ -30,10 +31,8 @@ async def get_relay(relay_id: str):
 
 @relay_route.post(
     "/relays",
-    response_description="Successful Response",
-    response_model=Relay,
     responses={
-        200: {"model": ExampleResponseOK, "description": "Successful response"},
+        200: {"model": ConfigureRelayResponse, "description": "Successful response"},
         400: {"model": ExampleResponseBadRequest, "description": "Bad Request"},
         404: {"model": ExampleResponseNotFound, "description": "Not Found"},
         500: {
@@ -42,29 +41,30 @@ async def get_relay(relay_id: str):
         },
     },
 )
-async def change_relay_state(relay_stats: RelayRequest):
-    """Change the state of a relay."""
-    relay_id = relay_stats.id
-    relay_state = relay_stats.state.upper()
+async def change_relay_state(request_body: List[Relay]):
+    """Change the state of relays."""
+    response = {}
+    print(request_body)
+    for relay_request in request_body:
 
-    if relay_state not in {"ON", "OFF"}:
-        raise HTTPException(
-            status_code=400, detail="Invalid state. Must be either 'ON' or 'OFF'."
-        )
+        relay_id = relay_request.id
+        relay_state = relay_request.state.upper()
 
-    if relay_id in relays:
-        if relay_state == "ON":
-            relays[relay_id].state = "ON"
-            turn_relay_on(relay_id)
-        elif relay_state == "OFF":
-            relays[relay_id].state = "OFF"
-            turn_relay_off(relay_id)
-        
-        return relays[relay_id]
-    else:
-        raise HTTPException(
-            status_code=404, detail=f"Relay with id '{relay_id}' does not exist"
-        )
+        if relay_state not in ["ON", "OFF"]:
+            error_dict = {"status_code": 400, "responce": "Invalid state. Must be either 'ON' or 'OFF'"}
+            response[relay_id] = error_dict
+            continue
+
+        if relay_id in relays:
+            configure_relay(relay_id, relay_state)
+            relays[relay_id].state = relay_state
+            relay_dict={"id":relay_id, "state":relay_state}
+            response[relay_id] = relay_dict
+        else:
+            error_dict = {"status_code": 404, "responce": f"Relay with id '{relay_id}' does not exist"}
+            response[relay_id] = error_dict
+
+    return response
 
 
 
