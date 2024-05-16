@@ -9,7 +9,7 @@ relay_route = APIRouter(tags=["Relay"])
 
 
 @relay_route.get(
-    "/relays[relay_id}",
+    "/relays/{relay_id}",
     responses={
         200: {"model": ExampleResponseOK, "description": "Successful response"},
         404: {"model": ExampleResponseNotFound, "description": "Not Found"},
@@ -32,7 +32,7 @@ async def get_relay(relay_id: str):
 @relay_route.post(
     "/relays",
     responses={
-        200: {"model": ConfigureRelayResponse, "description": "Successful response"},
+        200: {"model": ResponseOK, "description": "Successful response"},
         400: {"model": ExampleResponseBadRequest, "description": "Bad Request"},
         404: {"model": ExampleResponseNotFound, "description": "Not Found"},
         500: {
@@ -43,7 +43,7 @@ async def get_relay(relay_id: str):
 )
 async def change_relay_state(request_body: List[Relay]):
     """Change the state of relays."""
-    response = {}
+    response = []
     print(request_body)
     for relay_request in request_body:
 
@@ -51,18 +51,17 @@ async def change_relay_state(request_body: List[Relay]):
         relay_state = relay_request.state.upper()
 
         if relay_state not in ["ON", "OFF"]:
-            error_dict = {"status_code": 400, "responce": "Invalid state. Must be either 'ON' or 'OFF'"}
-            response[relay_id] = error_dict
+            error_dict = {"id": relay_id ,"status_code": 400, "responce": "Invalid state. Must be either 'ON' or 'OFF'"}
+            response.append(error_dict)
             continue
 
         if relay_id in relays:
             configure_relay(relay_id, relay_state)
             relays[relay_id].state = relay_state
-            relay_dict={"id":relay_id, "state":relay_state}
-            response[relay_id] = relay_dict
+            response.append({"id": relay_id, "state": relay_state, "status_code": 200, "responce": "Change state of relay successfully"})
         else:
-            error_dict = {"status_code": 404, "responce": f"Relay with id '{relay_id}' does not exist"}
-            response[relay_id] = error_dict
+            error_dict = {"id": relay_id,"status_code": 404, "responce": f"Relay with id '{relay_id}' does not exist"}
+            response.append(error_dict)
 
     return response
 
@@ -71,7 +70,7 @@ async def change_relay_state(request_body: List[Relay]):
 @relay_route.get(
     "/relays",
     responses={
-        200: {"model": AllRelaysResponse, "description": "Successful response"},
+        200: {"model": ResponseOK, "description": "Successful response"},
         500: {
             "model": ExampleResponseServerError,
             "description": "Internal Server Error",
@@ -80,7 +79,7 @@ async def change_relay_state(request_body: List[Relay]):
 )
 async def get_all_relays():
     """Get status of all relays"""
-    relay_status = {}
+    relay_list = []
     for relay_id, relay in relays.items():
-        relay_status[relay_id] = relay.Get_State()
-    return relay_status
+        relay_list.append({"id": relay_id, "state": relay.state})
+    return relay_list

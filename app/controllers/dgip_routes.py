@@ -13,7 +13,7 @@ class DigitalInputState(BaseModel):
 @degitalinput.get(
     "/digital-inputs",
     responses={
-        200: {"model": AllDGIPResponse, "description": "Successful response"},
+        200: {"model": ResponseOK, "description": "Successful response"},
         500: {
             "model": ExampleResponseServerError,
             "description": "Internal Server Error",
@@ -22,9 +22,9 @@ class DigitalInputState(BaseModel):
 )
 async def get_all_digital_input():
     """Get status of all relays"""
-    all_dgip_status = {}
+    all_dgip_status = []
     for dgip_id, dgip in DigitalInputs.items():
-        all_dgip_status[dgip_id] = dgip.Get_State()
+        all_dgip_status.append(dgip.Get_State())
     return all_dgip_status
 
 

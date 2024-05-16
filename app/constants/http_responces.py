@@ -6,6 +6,9 @@ class ExampleResponseOK(BaseModel):
     id: str 
     state: str = "OFF"
 
+class ResponseOK(BaseModel):
+    status: int = 200
+    message: str = 'OK'
 
 class ExampleResponseBadRequest(BaseModel):
     status: int = 400
