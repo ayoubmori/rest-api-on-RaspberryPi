@@ -26,8 +26,4 @@ relays = {
     'relay3': Relay(id="relay3")
 }
 
-class AllRelaysResponse(BaseModel):
-    relays: Dict[str, Relay]
-    
-class ConfigureRelayResponse(BaseModel):
-    relays: Dict[str, Relay]
+

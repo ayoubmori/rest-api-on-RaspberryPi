@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException,Body
 from typing import List, Dict
 import json
-from app.models.relay import Relay, relays, AllRelaysResponse, ConfigureRelayResponse
+from app.models.relay import Relay, relays
 from app.constants.http_responces import *
 from app.services.GPIO_control import configure_relay
 

@@ -32,5 +32,4 @@ DigitalInputs = {
 
 
 
-class AllDGIPResponse(BaseModel):
-    digital_inputs: Dict[str, DigitalInput]
+
