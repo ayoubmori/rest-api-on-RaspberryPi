@@ -1,14 +1,11 @@
 from fastapi import APIRouter, HTTPException
 
 from app.constants.http_responces import ExampleResponseServerError,ResponseOK
-from app.config.db import db
+from app.config.db import ControlProgram
 from app.models.control_program import Program
 
 from bson import ObjectId
 from bson.errors import InvalidId
-
-
-ControlProgram = db['control_program']
 
 
 control_prog= APIRouter(tags=["Control Program"])
@@ -71,7 +68,7 @@ async def get_all_programs():
 #GET by id 
 @control_prog.get(
     "/control-program/{id}",
-    summary="Get Program by id ",
+    summary="Get Control Program by id ",
         responses={
         200: {"model": ResponseOK
               , "description": "Successful response"},
@@ -83,7 +80,6 @@ async def get_all_programs():
 )
 async def get_program(control_program_id: str):
     try:
-        # Attempt to convert the program_id to ObjectId
         control_program_id = ObjectId(control_program_id)
     except InvalidId:
         return {
@@ -106,7 +102,7 @@ async def get_program(control_program_id: str):
 #DELETE by id    
 @control_prog.delete(
         "/control-program/{id}",
-        summary="Delete Program by id ",
+        summary="Delete Control Program by id ",
         responses={
         200: {"model": ResponseOK
               , "description": "Successful response"},
@@ -118,7 +114,6 @@ async def get_program(control_program_id: str):
 )
 async def delete_program(control_program_id: str):
     try:
-        # Attempt to convert the program_id to ObjectId
         control_program_id = ObjectId(control_program_id)
     except InvalidId:
         return {
@@ -142,4 +137,34 @@ async def delete_program(control_program_id: str):
             'status_code':404,
             'message': 'program does not exist'}
     
+    
+@control_prog.put("/control-program/{id}",
+        summary="update control Program by id ",
+        responses={
+        200: {"model": ResponseOK
+              , "description": "Successful response"},
+        500: {
+            "model": ExampleResponseServerError,
+            "description": "Internal Server Error",
+        },
+    }
+)
+async def update_control_program(control_program_id: str, new_control_program_item: Program):
+    try:
+        control_program_id = ObjectId(control_program_id)
+    except InvalidId:
+        return {
+            'status_code': 400,
+            'message': 'Invalid program ID format'
+        }
+
+    new_control_program_data = new_control_program_item.dict()
+
+    modified_count = ControlProgram.replace_one({"_id": ObjectId(control_program_id)}, new_control_program_data)
+
+    if modified_count == 0:
+        raise HTTPException(status_code=404, detail="Item not found")
+
+    return {"status_code" : 200 ,
+        "message": "Item replaced successfully"}
 
