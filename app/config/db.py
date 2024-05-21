@@ -7,3 +7,5 @@ db = client['test']
 
 # control program collection 
 ControlProgram = db['control_program']
+# calendar collection
+Calendar_doc = db['Calendar']

@@ -32,9 +32,9 @@ async def add_program(program: Program):
         print(result)
         # Check if document was inserted successfully
         if result.inserted_id:
-            return {"message": "Program added successfully"}
+            return {"message": "Contole program added successfully"}
         else:
-            raise HTTPException(status_code=500, detail="Failed to add program")
+            raise HTTPException(status_code=500, detail="Failed to add contole program")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
  
@@ -84,7 +84,7 @@ async def get_program(control_program_id: str):
     except InvalidId:
         return {
             'status_code': 400,
-            'message': 'Invalid program ID format'
+            'message': 'Invalid contole program ID format'
         }
 
     program = ControlProgram.find_one({"_id": control_program_id})
@@ -94,7 +94,7 @@ async def get_program(control_program_id: str):
     else :
         return {
             'status_code':404,
-            'message': 'Program does not exist'}
+            'message': 'Contole program does not exist'}
         
     
     
@@ -118,7 +118,7 @@ async def delete_program(control_program_id: str):
     except InvalidId:
         return {
             'status_code': 400,
-            'message': 'Invalid program ID format'
+            'message': 'Invalid contole program ID format'
         }
     # Query the collection for the document with the specified _id
     program = ControlProgram.find_one({"_id": control_program_id})
@@ -127,15 +127,15 @@ async def delete_program(control_program_id: str):
         if result.deleted_count == 1 :
             return {
                 'status_code':200,
-                'message': 'program deleted successfully'}
+                'message': 'Contole program deleted successfully'}
         else : 
             return {
                 'status_code':500,
-                'message': 'failed to deleted program'}
+                'message': 'failed to deleted contole program'}
     else :
         return {
             'status_code':404,
-            'message': 'program does not exist'}
+            'message': 'Contole program does not exist'}
     
     
 @control_prog.put("/control-program/{id}",
@@ -166,5 +166,5 @@ async def update_control_program(control_program_id: str, new_control_program_it
         raise HTTPException(status_code=404, detail="Item not found")
 
     return {"status_code" : 200 ,
-        "message": "Item replaced successfully"}
+        "message": "Control program replaced successfully"}
 
