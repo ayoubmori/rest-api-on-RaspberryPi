@@ -1,15 +1,19 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Body
 
 from app.constants.http_responces import ExampleResponseServerError,ResponseOK
-from app.config.db import ControlProgram
-from app.models.control_program import Program
+from app.config.db import ControlProg
+from app.models.control_program import ControlProgram
 
 from bson import ObjectId
 from bson.errors import InvalidId
-
+from typing import List
+import random
+import string
 
 control_prog= APIRouter(tags=["Control Program"])
 
+def generate_unique_id():
+    return int(''.join(random.choices(string.digits, k=10)))
 
 ##POST 
 @control_prog.post('/control-program',
@@ -21,13 +25,25 @@ control_prog= APIRouter(tags=["Control Program"])
             "description": "Internal Server Error",
         },
     })
-async def add_program(program: Program):
+async def add_program(program: ControlProgram = Body(..., example={
+    "controlProgramId": 2456468648,
+    "version": 1,
+    "name": "Sample Control Program",
+    "timeControls": [
+        {
+            "timeEvtType": "Fixed time",
+            "dimmingLevel": 50,
+            "fixedTime": "12:00",
+            "offset": 30
+        }
+    ]})):
     try:
         # Convert string "_id" to ObjectId
         program_dict = program.dict()
+        program_dict["controlProgramId"] = generate_unique_id()
         
         # Insert document into MongoDB collection
-        result = ControlProgram.insert_one(program_dict)
+        result = ControlProg.insert_one(program_dict)
         print(program_dict)
         print(result)
         # Check if document was inserted successfully
@@ -53,7 +69,7 @@ async def add_program(program: Program):
 async def get_all_programs():
     try:
         # Retrieve all documents from the MongoDB collection
-        programs = list(ControlProgram.find({}))
+        programs = list(ControlProg.find({}))
         
         # Convert ObjectId to string format
         for program in programs:
@@ -87,7 +103,7 @@ async def get_program(control_program_id: str):
             'message': 'Invalid contole program ID format'
         }
 
-    program = ControlProgram.find_one({"_id": control_program_id})
+    program = ControlProg.find_one({"_id": control_program_id})
     if program :
         program["_id"] = str(program["_id"])
         return program
@@ -123,7 +139,7 @@ async def delete_program(control_program_id: str):
     # Query the collection for the document with the specified _id
     program = ControlProgram.find_one({"_id": control_program_id})
     if program :
-        result = ControlProgram.delete_one({"_id": control_program_id})
+        result = ControlProg.delete_one({"_id": control_program_id})
         if result.deleted_count == 1 :
             return {
                 'status_code':200,
@@ -149,7 +165,7 @@ async def delete_program(control_program_id: str):
         },
     }
 )
-async def update_control_program(control_program_id: str, new_control_program_item: Program):
+async def update_control_program(control_program_id: str, new_control_program_item: ControlProgram):
     try:
         control_program_id = ObjectId(control_program_id)
     except InvalidId:
@@ -160,7 +176,7 @@ async def update_control_program(control_program_id: str, new_control_program_it
 
     new_control_program_data = new_control_program_item.dict()
 
-    modified_count = ControlProgram.replace_one({"_id": ObjectId(control_program_id)}, new_control_program_data)
+    modified_count = ControlProg.replace_one({"_id": ObjectId(control_program_id)}, new_control_program_data)
 
     if modified_count == 0:
         raise HTTPException(status_code=404, detail="Item not found")

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Body
 
 from app.constants.http_responces import ExampleResponseServerError,ResponseOK
 from app.config.db import Calendar_doc
@@ -7,9 +7,15 @@ from app.models.Calendar import Calendar
 from bson import ObjectId
 from bson.errors import InvalidId
 
+from datetime import date
+import random
+import string
+import json
 
 calendar_route = APIRouter(tags=["Calendar"])
 
+def generate_unique_id():
+    return int(''.join(random.choices(string.digits, k=10)))
 
 ##POST 
 @calendar_route.post('/calendar',
@@ -21,18 +27,52 @@ calendar_route = APIRouter(tags=["Calendar"])
             "description": "Internal Server Error",
         },
     })
-async def add_calendar(calendar: Calendar):
+async def add_calendar(calendar: Calendar = Body(..., example={
+    "calendarId": 587585,
+    "version": 1,
+    "name": "test1 Calendar",
+    "defaultCtrProgId": 542274,
+    "rules": [
+        {
+            "ctrProgId": 1001,
+            "timeConditiontype": 1,
+            "start": "2024-03-12",
+            "end": "2024-10-20"
+        },
+        {
+            "ctrProgId": 1002,
+            "timeConditiontype": 2,
+            "start": "2024-03-12",
+            "end": "2024-10-20"
+        }
+    ],
+    "lamp": [
+        {"id": "relay1"}
+    ]
+})):
     try:
         # Convert string "_id" to ObjectId
         calendar_dict = calendar.dict()
+        calendar_dict["calendarId"] = generate_unique_id()
         
+        # Convert start and end dates to strings
+        for rule in calendar_dict.get("rules", []):
+            # Check if start and end are not None and not ObjectId
+            if isinstance(rule.get("start"), date):
+                rule["start"] = rule["start"].isoformat()
+            if isinstance(rule.get("end"), date):
+                rule["end"] = rule["end"].isoformat()
+
         # Insert document into MongoDB collection
         result = Calendar_doc.insert_one(calendar_dict)
         print(calendar_dict)
         print(result)
+
         # Check if document was inserted successfully
         if result.inserted_id:
-            return {"message": "calendar added successfully"}
+            # Remove the '_id' field before returning the response
+            calendar_dict.pop('_id', None)
+            return {"message": "Calendar added successfully"}
         else:
             raise HTTPException(status_code=500, detail="Failed to add calendar")
     except Exception as e:
