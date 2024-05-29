@@ -1,18 +1,14 @@
 from fastapi import APIRouter, HTTPException, Body
-
-from app.constants.http_responces import ExampleResponseServerError,ResponseOK
-from app.config.db import Calendar_doc
-from app.models.Calendar import Calendar
-
-from bson import ObjectId
-from bson.errors import InvalidId
-
-from datetime import date
-import random
-import string
 import json
 
+from app.constants.http_responces import ExampleResponseServerError, ResponseOK
+from app.models.calendar import Calendar
+from app.services.db_services.calendar_mongo import MongoCalendarRepository
+
+
 calendar_route = APIRouter(tags=["Calendar"])
+
+calendar_repo = MongoCalendarRepository()
 
 def generate_unique_id():
     return int(''.join(random.choices(string.digits, k=10)))
@@ -51,36 +47,14 @@ async def add_calendar(calendar: Calendar = Body(..., example={
     ]
 })):
     try:
-        # Convert string "_id" to ObjectId
-        calendar_dict = calendar.dict()
-        calendar_dict["calendarId"] = generate_unique_id()
-        
-        # Convert start and end dates to strings
-        for rule in calendar_dict.get("rules", []):
-            # Check if start and end are not None and not ObjectId
-            if isinstance(rule.get("start"), date):
-                rule["start"] = rule["start"].isoformat()
-            if isinstance(rule.get("end"), date):
-                rule["end"] = rule["end"].isoformat()
-
-        # Insert document into MongoDB collection
-        result = Calendar_doc.insert_one(calendar_dict)
-        print(calendar_dict)
-        print(result)
-
-        # Check if document was inserted successfully
-        if result.inserted_id:
-            # Remove the '_id' field before returning the response
-            calendar_dict.pop('_id', None)
-            return {"message": "Calendar added successfully"}
-        else:
-            raise HTTPException(status_code=500, detail="Failed to add calendar")
+        inserted_id = calendar_repo.add(calendar)
+        return {"state": 200 ,"message": "Calendar added successfully", "id": inserted_id}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
 ##GET 
 @calendar_route.get(
-    "/calendar",
+    "/calendars",
         responses={
         200: {"model": ResponseOK
               , "description": "Successful response"},
@@ -92,14 +66,7 @@ async def add_calendar(calendar: Calendar = Body(..., example={
 )
 async def get_all_calendar():
     try:
-        # Retrieve all documents from the MongoDB collection
-        calendar_items = list(Calendar_doc.find({}))
-        
-        # Convert ObjectId to string format
-        for calendar_item in calendar_items:
-            calendar_item["_id"] = str(calendar_item["_id"])
-        
-        # Return the programs
+        calendar_items = calendar_repo.get_all()
         return calendar_items
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -120,21 +87,16 @@ async def get_all_calendar():
 )
 async def get_calender_by_id(calendar_id: str):
     try:
-        calendar_id = ObjectId(calendar_id)
-    except InvalidId:
-        return {
-            'status_code': 400,
-            'message': 'Invalid calendar ID format'
-        }
-
-    calender_item = Calendar_doc.find_one({"_id": calendar_id})
-    if calender_item :
-        calender_item["_id"] = str(calender_item["_id"])
-        return calender_item
-    else :
-        return {
-            'status_code':404,
-            'message': 'calendar does not exist'}
+        calendar_item = calendar_repo.get_by_id(calendar_id)
+        if calendar_item:
+            return calendar_item
+        else:
+            return {
+                'status_code': 404,
+                'message': 'Calendar does not exist'
+            }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
         
     
     
@@ -154,26 +116,16 @@ async def get_calender_by_id(calendar_id: str):
 )
 async def delete_program(calendar_id: str):
     try:
-        calendar_id = ObjectId(calendar_id)
-    except InvalidId:
-        return {
-            'status_code': 400,
-            'message': 'Invalid program ID format'
-        }
-    # Query the collection for the document with the specified _id
-    calender_item = Calendar_doc.find_one({"_id": calendar_id})
-    if calender_item :
-        result = Calendar_doc.delete_one({"_id": calendar_id})
-        if result.deleted_count == 1 :
+        success = calendar_repo.delete(calendar_id)
+        if success:
             return {
-                'status_code':200,
-                'message': 'calendar deleted successfully'}
-        else : 
+                'status_code': 200,
+                'message': 'Calendar deleted successfully'
+            }
+        else:
             return {
-                'status_code':500,
-                'message': 'failed to deleted calendar'}
-    else :
-        return {
-            'status_code':404,
-            'message': 'calendar does not exist'}
- 
+                'status_code': 404,
+                'message': 'Calendar does not exist'
+            }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

@@ -1,12 +1,13 @@
 from fastapi import APIRouter, HTTPException,Body
 from typing import List, Dict
 import json
-from app.models.relay import Relay, relays
+from app.models.relay import Relay, relays, RelayConfig, TimeoutRequest, ModeRequest
 from app.constants.http_responces import *
 from app.services.GPIO_control import configure_relay
 
 relay_route = APIRouter(tags=["Relay"])
 
+relay_config = RelayConfig()
 
 @relay_route.get(
     "/relays/{relay_id}",
@@ -83,3 +84,62 @@ async def get_all_relays():
     for relay_id, relay in relays.items():
         relay_list.append({"id": relay_id, "state": relay.state})
     return relay_list
+
+
+
+
+
+
+
+
+# Control mode endpoints
+@relay_route.get(
+    "/relays/config/control_mode",
+    responses={
+        200: {"description": "Successful response"},
+        500: {"description": "Internal Server Error"},
+    },
+)
+async def get_control_mode():
+    """Get the control mode for all relays"""
+    return {"mode": relay_config.mode}
+
+@relay_route.post(
+    "/relays/config/control_mode",
+    responses={
+        200: {"description": "Successful response"},
+        400: {"description": "Bad Request"},
+        500: {"description": "Internal Server Error"},
+    },
+)
+async def set_control_mode(request_body: ModeRequest):
+    """Set the control mode for all relays"""
+    mode = request_body.mode
+    relay_config.mode = mode
+    return {"message": "Control mode updated successfully"}
+
+# Timeout configuration endpoints
+@relay_route.get(
+    "/relays/config/timeout",
+    responses={
+        200: {"description": "Successful response"},
+        500: {"description": "Internal Server Error"},
+    },
+)
+async def get_timeout():
+    """Get the timeout configuration for all relays"""
+    return {"timeout": relay_config.timeout}
+
+@relay_route.post(
+    "/relays/config/timeout",
+    responses={
+        200: {"description": "Successful response"},
+        400: {"description": "Bad Request"},
+        500: {"description": "Internal Server Error"},
+    },
+)
+async def set_timeout(request_body: TimeoutRequest):
+    """Set the timeout configuration for all relays"""
+    timeout = request_body.timeout
+    relay_config.timeout = timeout
+    return {"message": "Timeout configuration updated successfully"}

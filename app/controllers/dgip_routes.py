@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from app.constants.http_responces import *
-from app.models.DGIP import DigitalInput, DigitalInputs
+from app.models.dgip import DigitalInput, DigitalInputs
 
 
 degitalinput = APIRouter(tags=["Digital Input"])
