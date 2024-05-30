@@ -2,7 +2,7 @@ from typing import List, Optional
 from bson import ObjectId
 from app.config.db import ControlProg
 from app.models.control_program import ControlProgram
-from app.repositories.control_program_repo import ControlProgramRepository
+from app.repositories.abstactm.control_program_repo import ControlProgramRepository
 
 
 class MongoControlProgramRepository(ControlProgramRepository):

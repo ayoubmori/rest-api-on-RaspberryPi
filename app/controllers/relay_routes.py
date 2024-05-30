@@ -3,7 +3,7 @@ from typing import List, Dict
 import json
 from app.models.relay import Relay, relays, RelayConfig, TimeoutRequest, ModeRequest
 from app.constants.http_responces import *
-from app.services.GPIO_control import configure_relay
+from app.services.gpio.GPIO_control import configure_relay
 
 relay_route = APIRouter(tags=["Relay"])
 

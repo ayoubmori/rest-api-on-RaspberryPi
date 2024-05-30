@@ -2,7 +2,7 @@ from typing import List
 from app.models.calendar import Calendar
 from app.config.db import Calendar_doc
 from bson import ObjectId
-from app.repositories.calendar_repo import CalendarRepository
+from app.repositories.abstactm.calendar_repo import CalendarRepository
 
 class MongoCalendarRepository(CalendarRepository):
     def add(self, calendar: Calendar) -> str:

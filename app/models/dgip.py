@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from typing import Dict
-from app.services.GPIO_state import dgip_pin_status
+from app.services.gpio.GPIO_state import dgip_pin_status
 
 class DigitalInput(BaseModel):
     id: str

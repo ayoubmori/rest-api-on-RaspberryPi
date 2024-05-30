@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field, validator
 from typing import Dict, List
 import json
-from app.services.GPIO_state import relay_pin_status
+from app.services.gpio.GPIO_state import relay_pin_status
 
 class Relay(BaseModel):
     id: str
