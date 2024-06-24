@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Body
 from app.constants.http_responces import ExampleResponseServerError, ResponseOK
 from app.models.calendar import Calendar
+from app.constants.BodyExmples import *
 from app.services.calendar import *
 
 calendar_route = APIRouter(tags=["Calendar"])
@@ -15,30 +16,8 @@ calendar_route = APIRouter(tags=["Calendar"])
             "description": "Internal Server Error",
         },
     })
-async def add_calendar(calendar: Calendar = Body(..., example={
-    "calendarId": 587585,
-    "version": 1,
-    "name": "test1 Calendar",
-    "defaultCtrProgId": 542274,
-    "rules": [
-        {
-            "ctrProgId": 1001,
-            "timeConditiontype": 1,
-            "start": "2024-03-12",
-            "end": "2024-10-20"
-        },
-        {
-            "ctrProgId": 1002,
-            "timeConditiontype": 2,
-            "start": "2024-03-12",
-            "end": "2024-10-20"
-        }
-    ],
-    "lamp": [
-        {"id": "relay1"}
-    ]
-})):
-    add_calendar(calendar)
+async def add_calendar(calendar: Calendar = Body(..., example=addCalendarBodyExmple)):
+    return await add_calendar(calendar)
     
 ##GET 
 @calendar_route.get(
@@ -53,7 +32,7 @@ async def add_calendar(calendar: Calendar = Body(..., example={
     }
 )
 async def get_all_calendar():
-    Get_All_Calendar()
+    return await Get_All_Calendar()
     
     
 #GET by id 
@@ -70,7 +49,7 @@ async def get_all_calendar():
     }
 )
 async def get_calender_by_id(calendar_id: str):
-    Get_Calender_By_Id(calendar_id)
+    return await Get_Calender_By_Id(calendar_id)
         
     
     
@@ -89,4 +68,4 @@ async def get_calender_by_id(calendar_id: str):
     }
 )
 async def delete_program(calendar_id: str):
-    Delete_Program(calendar_id)
+    return await Delete_Program(calendar_id)

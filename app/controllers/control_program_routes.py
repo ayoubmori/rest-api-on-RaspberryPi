@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Body
 from app.models.control_program import ControlProgram
 from app.constants.http_responces import ExampleResponseServerError, ResponseOK
+from app.constants.BodyExmples import *
 from app.services.control_program import *
 
 control_prog= APIRouter(tags=["Control Program"])
@@ -18,19 +19,8 @@ control_prog= APIRouter(tags=["Control Program"])
             "description": "Internal Server Error",
         },
     })
-async def add_program(program: ControlProgram = Body(..., example={
-    "controlProgramId": 2456468648,
-    "version": 1,
-    "name": "Sample Control Program",
-    "timeControls": [
-        {
-            "timeEvtType": "Fixed time",
-            "dimmingLevel": 50,
-            "fixedTime": "12:00",
-            "offset": 30
-        }
-    ]})):
-    Add_Program(program)
+async def add_program(program: ControlProgram = Body(..., example=addProgramBodyExmple)):
+    return await Add_Program(program)
  
 ##GET 
 @control_prog.get(
@@ -45,7 +35,7 @@ async def add_program(program: ControlProgram = Body(..., example={
     }
 )
 async def get_all_programs():
-    Get_All_Programs()
+    return await Get_All_Programs()
     
     
 #GET by id 
@@ -62,7 +52,7 @@ async def get_all_programs():
     }
 )
 async def get_program(control_program_id: str):
-    Get_Program(control_program_id)
+    return await Get_Program(control_program_id)
         
     
 #DELETE by id    
@@ -79,7 +69,7 @@ async def get_program(control_program_id: str):
     }
 )
 async def delete_program(control_program_id: str):
-    Delete_Program(control_program_id)
+    return await Delete_Program(control_program_id)
     
     
 @control_prog.put("/control-program/{id}",
@@ -94,5 +84,5 @@ async def delete_program(control_program_id: str):
     }
 )
 async def update_control_program(control_program_id: str, new_control_program_item: ControlProgram):
-    Update_Control_Program(control_program_id, new_control_program_item)
+    return await Update_Control_Program(control_program_id, new_control_program_item)
 

@@ -2,9 +2,9 @@ from typing import List
 from app.models.calendar import Calendar
 from app.config.db import Calendar_doc
 from bson import ObjectId
-from app.repositories.abstactm.calendar_repo import CalendarRepository
+#from app.repositories.abstactm.calendar_repo import CalendarRepository
 
-class MongoCalendarRepository(CalendarRepository):
+class MongoCalendarRepository():
     def add(self, calendar: Calendar) -> str:
         calendar_dict = calendar.dict(by_alias=True)
         result = Calendar_doc.insert_one(calendar_dict)

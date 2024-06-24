@@ -10,7 +10,7 @@ def generate_unique_id():
     return int(''.join(random.choices(string.digits, k=10)))
 
 #post : add control program
-def Add_Program(program):
+async def Add_Program(program):
     try:
         program.controlProgramId = generate_unique_id()
         program_id = control_program_repo.add(program)
@@ -29,7 +29,7 @@ async def Get_All_Programs():
     
     
 #get : get by id
-def	Get_Program(control_program_id):
+async def	Get_Program(control_program_id):
     try:
         program = control_program_repo.get_by_id(control_program_id)
         if program:
@@ -41,7 +41,7 @@ def	Get_Program(control_program_id):
     
     
 #delete : delete by id
-def Delete_Program(control_program_id):
+async def Delete_Program(control_program_id):
     try:
         success = control_program_repo.delete(control_program_id)
         if success:
@@ -52,7 +52,7 @@ def Delete_Program(control_program_id):
         raise HTTPException(status_code=500, detail=str(e))    
     
 #put : put by id
-def Update_Control_Program(control_program_id, new_control_program_item):
+async def Update_Control_Program(control_program_id, new_control_program_item):
     try:
         success = control_program_repo.update(control_program_id, new_control_program_item)
         if success:

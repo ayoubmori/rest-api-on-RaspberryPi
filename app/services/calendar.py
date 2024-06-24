@@ -8,14 +8,14 @@ calendar_repo = MongoCalendarRepository()
 def generate_unique_id():
     return int(''.join(random.choices(string.digits, k=10)))
 
-def Add_Calendar(calendar):
+async def Add_Calendar(calendar):
     try:
         inserted_id = calendar_repo.add(calendar)
         return {"state": 200 ,"message": "Calendar added successfully", "id": inserted_id}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-def Get_All_Calendar():
+async def Get_All_Calendar():
     try:
         calendar_items = calendar_repo.get_all()
         return calendar_items
@@ -23,7 +23,7 @@ def Get_All_Calendar():
         raise HTTPException(status_code=500, detail=str(e))
     
 
-def Get_Calender_By_Id(calendar_id):
+async def Get_Calender_By_Id(calendar_id):
     try:
         calendar_item = calendar_repo.get_by_id(calendar_id)
         if calendar_item:
@@ -37,7 +37,7 @@ def Get_Calender_By_Id(calendar_id):
         raise HTTPException(status_code=500, detail=str(e))
     
     
-def Delete_Program(calendar_id):
+async def Delete_Program(calendar_id):
     try:
         success = calendar_repo.delete(calendar_id)
         if success:
