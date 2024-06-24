@@ -2,10 +2,10 @@ from typing import List, Optional
 from bson import ObjectId
 from app.config.db import ControlProg
 from app.models.control_program import ControlProgram
-from app.repositories.abstactm.control_program_repo import ControlProgramRepository
+#from app.repositories.abstactm.control_prog_repo import ControlProgramRepository
 
 
-class MongoControlProgramRepository(ControlProgramRepository):
+class MongoControlProgramRepository():
     def add(self, program: ControlProgram) -> str:
         program_dict = program.dict(by_alias=True)
         result = ControlProg.insert_one(program_dict)

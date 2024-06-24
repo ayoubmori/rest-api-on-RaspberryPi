@@ -1,8 +1,8 @@
 import RPi.GPIO as GPIO
 from time import sleep
 
-from app.services.GPIO_pins import relay_pins, digital_input_pins
-from app.services.GPIO_state import *
+from app.services.gpio.GPIO_pins import relay_pins, digital_input_pins
+from app.services.gpio.GPIO_state import *
 
 
 ### configure relay

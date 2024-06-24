@@ -1,19 +1,16 @@
-from fastapi import APIRouter, HTTPException, Body
-from typing import List
-from app.models.control_program import ControlProgram
-from app.constants.http_responces import ExampleResponseServerError, ResponseOK
-from app.services.db_services.control_prog_mongo import MongoControlProgramRepository
+from fastapi import HTTPException
+import random
+import string
+from app.repositories.control_prog_mongo import MongoControlProgramRepository
 
 control_program_repo = MongoControlProgramRepository()
    
 
 def generate_unique_id():
-    import random
-    import string
     return int(''.join(random.choices(string.digits, k=10)))
 
 #post : add control program
-def Add_Program(program)
+def Add_Program(program):
     try:
         program.controlProgramId = generate_unique_id()
         program_id = control_program_repo.add(program)
@@ -22,15 +19,13 @@ def Add_Program(program)
         raise HTTPException(status_code=500, detail=str(e))
 
 #get : get all control program
-def Get_All_Programs()    
+async def Get_All_Programs():
     try:
         programs = control_program_repo.get_all()
         return programs
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
     
     
 #get : get by id

@@ -1,4 +1,4 @@
-from .Set_GPIO import *
+from .gpio.Set_GPIO import *
 
 
 SetUp_GPIO()

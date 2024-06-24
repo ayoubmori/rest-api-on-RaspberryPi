@@ -1,5 +1,5 @@
 import RPi.GPIO as GPIO
-from app.services.GPIO_pins import relay_pins, digital_input_pins
+from app.services.gpio.GPIO_pins import relay_pins, digital_input_pins
 
 def SetUp_GPIO():
     GPIO.setmode(GPIO.BCM)

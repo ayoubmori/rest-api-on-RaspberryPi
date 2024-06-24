@@ -1,6 +1,5 @@
-from fastapi import APIRouter, HTTPException,Body
-from typing import List, Dict
-import json
+from fastapi import APIRouter, HTTPException
+from typing import List
 from app.models.relay import Relay, relays, RelayConfig, TimeoutRequest, ModeRequest
 from app.constants.http_responces import *
 from app.services.gpio.GPIO_control import configure_relay

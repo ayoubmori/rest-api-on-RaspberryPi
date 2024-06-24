@@ -1,12 +1,10 @@
-from fastapi import APIRouter, HTTPException, Body
-from typing import List
+from fastapi import APIRouter, Body
 from app.models.control_program import ControlProgram
 from app.constants.http_responces import ExampleResponseServerError, ResponseOK
-from app.services.db_services.control_prog_mongo import MongoControlProgramRepository
+from app.services.control_program import *
 
 control_prog= APIRouter(tags=["Control Program"])
 
-control_program_repo = MongoControlProgramRepository()
 
 
 
